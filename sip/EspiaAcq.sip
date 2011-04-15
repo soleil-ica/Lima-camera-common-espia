@@ -67,26 +67,26 @@ using namespace lima;
 
 	Espia::Dev& getDev();
 
-	void bufferAlloc(int& nb_buffers, int nb_buffer_frames, 
+	void bufferAlloc(int& nb_buffers /InOut/, int nb_buffer_frames, 
 			 const FrameDim& frame_dim);
 	void bufferFree();
 
 	const FrameDim& getFrameDim();
-	void getNbBuffers(int& nb_buffers);
-	void getNbBufferFrames(int& nb_buffer_frames);
+	void getNbBuffers(int& nb_buffers /Out/);
+	void getNbBufferFrames(int& nb_buffer_frames /Out/);
 
 	void *getBufferFramePtr(int buffer_nb, int frame_nb = 0);
 	void *getAcqFramePtr(int acq_frame_nb);
-	void getFrameInfo(int acq_frame_nb, HwFrameInfoType& info);
+	void getFrameInfo(int acq_frame_nb, HwFrameInfoType& info /Out/);
 
 	void setNbFrames(int  nb_frames);
-	void getNbFrames(int& nb_frames);
+	void getNbFrames(int& nb_frames /Out/);
 
 	void start();
 	void stop();
 	void getStatus(StatusType& status /Out/);
 
-	void getStartTimestamp(Timestamp& start_ts);
+	void getStartTimestamp(Timestamp& start_ts /Out/);
 
 	void registerAcqEndCallback(Espia::AcqEndCallback& acq_end_cb);
 	void unregisterAcqEndCallback(Espia::AcqEndCallback& acq_end_cb);
