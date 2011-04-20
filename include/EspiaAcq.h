@@ -96,6 +96,9 @@ class Acq : public HwFrameCallbackGen
 	void registerAcqEndCallback(AcqEndCallback& acq_end_cb);
 	void unregisterAcqEndCallback(AcqEndCallback& acq_end_cb);
 
+	void setSGRoi(const Size& det_frame_size, const Roi& roi);
+	void getSGRoi(Size& det_frame_size, Roi& roi);
+
  protected:
 	virtual void setFrameCallbackActive(bool cb_active);
 
@@ -118,6 +121,8 @@ class Acq : public HwFrameCallbackGen
 
 	AutoMutex acqLock();
 
+	void setupSGRoi(const Size& det_frame_size, const Roi& sg_roi);
+
 	Dev& m_dev;
 
 	FrameDim m_frame_dim;
@@ -125,6 +130,8 @@ class Acq : public HwFrameCallbackGen
 	int m_nb_buffer_frames;
 	int m_real_frame_factor;
 	int m_real_frame_size;
+	Size m_det_frame_size;
+	Roi m_sg_roi;
 
 	int m_nb_frames;
 	bool m_started;

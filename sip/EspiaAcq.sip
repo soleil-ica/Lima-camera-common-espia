@@ -91,6 +91,9 @@ using namespace lima;
 	void registerAcqEndCallback(Espia::AcqEndCallback& acq_end_cb);
 	void unregisterAcqEndCallback(Espia::AcqEndCallback& acq_end_cb);
 
+	void setSGRoi(const Size& det_frame_size, const Roi& roi);
+	void getSGRoi(Size& det_frame_size /Out/, Roi& roi /Out/);
+
  protected:
 	virtual void setFrameCallbackActive(bool cb_active);
 };

@@ -151,6 +151,24 @@ void Dev::getCcdStatus(int& ccd_status)
 	DEB_RETURN() << DEB_VAR1(DEB_HEX(ccd_status));
 }
 
+void Dev::setDebugLevels(int lib_deb_lvl, int drv_deb_lvl)
+{
+	DEB_MEMBER_FUNCT();
+	DEB_PARAM() << DEB_VAR2(lib_deb_lvl, drv_deb_lvl);
+	CHECK_CALL(espia_debug_level(m_dev, &lib_deb_lvl, 0));
+	CHECK_CALL(espia_debug_level(m_dev, &drv_deb_lvl, 1));
+	DEB_TRACE() << "Previous " << DEB_VAR2(lib_deb_lvl, drv_deb_lvl);
+}
+
+void Dev::getDebugLevels(int& lib_deb_lvl, int& drv_deb_lvl)
+{
+	DEB_MEMBER_FUNCT();
+	lib_deb_lvl = drv_deb_lvl = -1;
+	CHECK_CALL(espia_debug_level(m_dev, &lib_deb_lvl, 0));
+	CHECK_CALL(espia_debug_level(m_dev, &drv_deb_lvl, 1));
+	DEB_RETURN() << DEB_VAR2(lib_deb_lvl, drv_deb_lvl);
+}
+
 
 void Dev::initDrvOptMap()
 {

@@ -286,6 +286,9 @@ void Acq::bufferAlloc(int& nb_buffers, int nb_buffer_frames,
 	m_real_frame_factor = frame_factor;
 	m_real_frame_size   = real_frame_size;
 
+	if (!m_sg_roi.isEmpty())
+		setupSGRoi(m_det_frame_size, m_sg_roi);
+
 	DEB_RETURN() << DEB_VAR1(nb_buffers);
 }
 
@@ -506,6 +509,66 @@ void Acq::unregisterAcqEndCallback(AcqEndCallback& acq_end_cb)
 
 	m_acq_end_cb = NULL;
 	acq_end_cb.setAcq(NULL);
+}
+
+void Acq::setSGRoi(const Size& det_frame_size, const Roi& sg_roi)
+{
+	DEB_MEMBER_FUNCT();
+	DEB_PARAM() << DEB_VAR2(det_frame_size, sg_roi);
+
+	m_det_frame_size = det_frame_size;
+	m_sg_roi = sg_roi;
+	if (m_nb_buffers > 0)
+		setupSGRoi(det_frame_size, m_sg_roi);
+}
+
+void Acq::getSGRoi(Size& det_frame_size, Roi& sg_roi)
+{
+	DEB_MEMBER_FUNCT();
+	det_frame_size = m_det_frame_size;
+	sg_roi = m_sg_roi;
+	DEB_RETURN() << DEB_VAR2(det_frame_size, sg_roi);
+}
+
+void Acq::setupSGRoi(const Size& det_frame_size, const Roi& sg_roi)
+{
+	DEB_MEMBER_FUNCT();
+	DEB_PARAM() << DEB_VAR3(det_frame_size, sg_roi, m_frame_dim);
+
+	struct scdxipci_sg_table *sg_list;
+	struct espia_frame_dim eframe_dim;
+	struct espia_roi eroi, *eroi_ptr;
+
+	eframe_dim.width  = det_frame_size.getWidth();
+	eframe_dim.height = det_frame_size.getHeight();
+	eframe_dim.depth  = m_frame_dim.getDepth();
+
+	if (sg_roi.isEmpty()) {
+		eroi_ptr = NULL;
+	} else {
+		Size roi_size = sg_roi.getSize();
+		eroi.left   = sg_roi.getTopLeft().x;
+		eroi.top    = sg_roi.getTopLeft().y;
+		eroi.width  = roi_size.getWidth();
+		eroi.height = roi_size.getHeight();
+		eroi_ptr    = &eroi;
+	}
+
+	int nr_dev;
+	CHECK_CALL(espia_create_sg(m_dev, ESPIA_SG_NORM, &eframe_dim, eroi_ptr,
+				   &sg_list, &nr_dev));
+	try {
+		if (nr_dev > 1)
+			THROW_HW_ERROR(Error) << "espia_create_sg retured "
+					      << DEB_VAR1(nr_dev);
+
+		CHECK_CALL(espia_set_sg(m_dev, 0, &sg_list[0]));
+	} catch (...) {
+		espia_release_sg(m_dev, sg_list, nr_dev);
+		throw;
+	}
+
+	CHECK_CALL(espia_release_sg(m_dev, sg_list, nr_dev));
 }
 
 

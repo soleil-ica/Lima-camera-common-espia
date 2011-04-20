@@ -39,6 +39,9 @@ using namespace lima;
 	void resetLink();
 	void getCcdStatus(int& ccd_status);
 
+	void setDebugLevels(int  lib_deb_lvl,       int  drv_deb_lvl);
+	void getDebugLevels(int& lib_deb_lvl /Out/, int& drv_deb_lvl /Out/);
+
 	void getDrvOption(const std::string &opt_name, int& val /Out/);
 	void setDrvOption(const std::string &opt_name, int val );
 

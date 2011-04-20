@@ -67,6 +67,9 @@ class Dev
 
 	AutoMutex acqLock();
 
+	void setDebugLevels(int  lib_deb_lvl, int  drv_deb_lvl);
+	void getDebugLevels(int& lib_deb_lvl, int& drv_deb_lvl);
+
 	void getDrvOption(const std::string& opt_name, int& val);
 	void setDrvOption(const std::string& opt_name, int  val);
 
