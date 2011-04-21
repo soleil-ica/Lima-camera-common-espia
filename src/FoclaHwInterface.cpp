@@ -218,9 +218,8 @@ void BufferCtrlObj::unregisterFrameCallback(HwFrameCallback &frame_cb)
  * @param[in] acq          reference to Espia::Acq object
  * @param[in] focla        reference to Espia::Focla::Dev object
  *******************************************************************/
-SyncCtrlObj::SyncCtrlObj( Espia::Acq &acq, Dev &focla, 
-			  HwBufferCtrlObj& buffer_ctrl )
-	: HwSyncCtrlObj( buffer_ctrl ), m_acq(acq), m_focla(focla)
+SyncCtrlObj::SyncCtrlObj( Espia::Acq &acq, Dev &focla)
+	: HwSyncCtrlObj(), m_acq(acq), m_focla(focla)
 {
 }
 
@@ -297,7 +296,7 @@ Interface::Interface( Espia::Acq &acq, BufferCtrlMgr &buffer_mgr,
                       Espia::Focla::Dev &focla )
 	: m_acq(acq), m_buffer_mgr(buffer_mgr), m_focla(focla),
 	  m_det_info(focla), m_buffer(buffer_mgr), 
-	  m_sync(acq, focla, m_buffer)
+	  m_sync(acq, focla)
 {
 	HwDetInfoCtrlObj *det_info = &m_det_info;
 	m_cap_list.push_back(HwCap(det_info));

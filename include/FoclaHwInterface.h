@@ -125,8 +125,7 @@ class BufferCtrlObj : public HwBufferCtrlObj
 class SyncCtrlObj : public HwSyncCtrlObj
 {
   public:
-	SyncCtrlObj( Espia::Acq &acq, Dev &focla, 
-		     HwBufferCtrlObj& buffer_ctrl );
+	SyncCtrlObj( Espia::Acq &acq, Dev &focla);
 	virtual ~SyncCtrlObj();
 
 	virtual bool checkTrigMode(TrigMode trig_mode);
