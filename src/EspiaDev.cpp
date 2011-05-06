@@ -233,6 +233,24 @@ void Dev::setDrvOption(const string& opt_name, int val)
 }
 
 
+void Dev::writeReg(Register reg, unsigned int& val, unsigned int mask)
+{
+	DEB_MEMBER_FUNCT();
+	DEB_PARAM() << DEB_VAR2(DEB_HEX(reg), DEB_HEX(val));
+	CHECK_CALL(espia_write_register(m_dev, reg, &val, mask));
+	DEB_RETURN() << DEB_VAR1(DEB_HEX(val));
+}
+
+
+void Dev::readReg(Register reg, unsigned int& val)
+{
+	DEB_MEMBER_FUNCT();
+	DEB_PARAM() << DEB_VAR1(DEB_HEX(reg));
+	CHECK_CALL(espia_read_register(m_dev, reg, &val));
+	DEB_RETURN() << DEB_VAR1(DEB_HEX(val));
+}
+
+
 void Dev::initParamMap()
 {
 	DEB_MEMBER_FUNCT();

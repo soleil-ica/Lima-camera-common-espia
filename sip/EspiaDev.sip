@@ -45,6 +45,10 @@ using namespace lima;
 	void getDrvOption(const std::string &opt_name, int& val /Out/);
 	void setDrvOption(const std::string &opt_name, int val );
 
+	void writeReg(Espia::Register reg, unsigned int& val /In,Out/, 
+		      unsigned int mask=0xffffffff);
+	void readReg (Espia::Register reg, unsigned int& val /Out/);
+
 	void getParam(const std::string &param_name, int& val /Out/);
 	void setParam(const std::string &param_name, int val );
 

@@ -67,7 +67,7 @@ using namespace lima;
 
 	Espia::Dev& getDev();
 
-	void bufferAlloc(int& nb_buffers /InOut/, int nb_buffer_frames, 
+	void bufferAlloc(int& nb_buffers /In,Out/, int nb_buffer_frames, 
 			 const FrameDim& frame_dim);
 	void bufferFree();
 

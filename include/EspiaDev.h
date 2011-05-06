@@ -73,6 +73,10 @@ class Dev
 	void getDrvOption(const std::string& opt_name, int& val);
 	void setDrvOption(const std::string& opt_name, int  val);
 
+	void writeReg(Register reg, unsigned int& val, 
+		      unsigned int mask=0xffffffff);
+	void readReg (Register reg, unsigned int& val);
+
 	void getParam(const std::string& param_name, int& val);
 	void setParam(const std::string& param_name, int  val);
 

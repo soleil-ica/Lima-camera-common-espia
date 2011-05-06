@@ -33,6 +33,18 @@ enum {
 	MetaDev = SCDXIPCI_META_DEV,
 };
 
+enum Register {
+	RegStatus		= 0x00, //  0 * 4
+	RegControl		= 0x04, //  1 * 4
+	RegDMAAddr		= 0x08, //  2 * 4
+	RegDMASize		= 0x0c, //  3 * 4
+	RegSGTabAddr		= 0x10, //  4 * 4
+	RegFlashAdd		= 0x1c, //  7 * 4
+	RegFlashData		= 0x20, //  8 * 4
+	RegSerialStatus		= 0x24, //  9 * 4
+	RegPixelCount		= 0x28, // 10 * 4
+};
+
 unsigned long Sec2USec(double sec);
 double USec2Sec(unsigned long usec);
 std::string StrError(int ret);
