@@ -78,8 +78,22 @@ void Dev::open(int dev_nb)
 
 	close();
 
-	DEB_TRACE() << "Calling espia_open";
-	CHECK_CALL(espia_open(dev_nb, &m_dev));
+	try {
+		DEB_TRACE() << "Calling espia_open";
+		CHECK_CALL(espia_open(dev_nb, &m_dev));
+	} catch (Exception e) {
+		string err_msg = e.getErrMsg();
+		DEB_TRACE() << "Error in espia_open: " << DEB_VAR1(err_msg);
+		string noentry_msg = StrError(-ENOENT);
+		bool noentry = (err_msg.find(noentry_msg) != string::npos);
+		if (!noentry)
+			throw;
+
+		THROW_HW_ERROR(Error) << "Cannot open Espia " 
+				      << DEB_VAR1(dev_nb) << ": "
+				      << "is driver loaded and board present?";
+	}
+
 	m_dev_nb = dev_nb;
 }
 
