@@ -518,7 +518,8 @@ void Acq::setSGRoi(const Size& det_frame_size, const Roi& sg_roi)
 
 	m_det_frame_size = det_frame_size;
 	m_sg_roi = sg_roi;
-	if ((m_nb_buffers > 0) && (sg_roi.getSize() == m_frame_dim.getSize()))
+	bool size_match = (sg_roi.getSize() == m_frame_dim.getSize());
+	if ((m_nb_buffers > 0) && (sg_roi.isEmpty() || size_match))
 		setupSGRoi(det_frame_size, m_sg_roi);
 }
 
