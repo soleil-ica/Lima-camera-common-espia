@@ -82,7 +82,7 @@ void DetInfoCtrlObj::setCurrImageType(ImageType curr_image_type)
 }
 
 
-void DetInfoCtrlObj::getPixelSize(double &pixel_size)
+void DetInfoCtrlObj::getPixelSize(double& x_size,double& y_size)
 {
 	throw LIMA_HW_EXC(NotSupported,"This function is not supported by Focla");
 }
