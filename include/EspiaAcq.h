@@ -25,6 +25,7 @@
 #include "EspiaDev.h"
 #include "SizeUtils.h"
 #include "HwFrameCallback.h"
+#include "Event.h"
 
 namespace lima
 {
@@ -56,7 +57,7 @@ class AcqEndCallback
 };
 
 
-class Acq : public HwFrameCallbackGen
+class Acq : public HwFrameCallbackGen, public EventCallbackGen
 {
 	DEB_CLASS_NAMESPC(DebModEspia, "Acq", "Espia");
 
@@ -117,7 +118,7 @@ class Acq : public HwFrameCallbackGen
 	void disableFrameCallback();
 
 	static int dispatchFrameCallback(struct espia_cb_data *cb_data);
-	void processFrameCallback(struct espia_cb_data *cb_data);
+	bool processFrameCallback(struct espia_cb_data *cb_data);
 
 	AutoMutex acqLock();
 

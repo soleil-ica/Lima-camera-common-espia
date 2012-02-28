@@ -120,7 +120,7 @@ int Acq::dispatchFrameCallback(struct espia_cb_data *cb_data)
 	Acq *espia = (Acq *) cb_data->data;
 	DEB_TRACE() << DEB_VAR1(DEB_OBJ_NAME(espia));
 
-	void (Acq::*method)(struct espia_cb_data *cb_data) = NULL;
+	bool (Acq::*method)(struct espia_cb_data *cb_data) = NULL;
 
 	int& cb_nb = cb_data->cb_nr;
 	if (cb_nb == espia->m_frame_cb_nb) {
@@ -128,17 +128,47 @@ int Acq::dispatchFrameCallback(struct espia_cb_data *cb_data)
 		method = &Acq::processFrameCallback;
 	}
 
-	if (method) {
+	string err_msg;
+
+	if (method && (cb_data->ret == 0)) {
 		try {
-			(espia->*method)(cb_data);
+			bool cont_cb = (espia->*method)(cb_data);
+			if (!cont_cb)
+				DEB_ERROR() << "Aborting acquisition!";
+			int ret = cont_cb ? ESPIA_OK : ESPIA_ERR_ABORT;
+			DEB_RETURN() << DEB_VAR1(ret);
+			return ret;
 		} catch (Exception& e) {
-			DEB_ERROR() << e.getErrMsg();
+			err_msg = e.getErrMsg();
 		} catch (...) {
-			DEB_ERROR() << "Unknown Error in frame callback";
+			err_msg = "Unknown Error in frame callback";
 		}
+	} else if (!method) {
+		ostringstream os;
+		os << "Unexpected frame callback: " << DEB_VAR1(cb_nb);
+		err_msg = os.str();
+	} else {
+		ostringstream os;
+		os << "Espia callback error: " << StrError(cb_data->ret);
+		err_msg = os.str();
 	}
-	
-	return ESPIA_OK;
+
+	string espia_name = DEB_OBJ_NAME(espia);
+	err_msg.insert(0, espia_name + ": ");
+	string overrun_msg = StrError(SCDXIPCI_ERR_OVERRUN);
+	bool overrun = (err_msg.find(overrun_msg) != string::npos);
+	Event::Code err_code = overrun ? Event::CamOverrun : 
+					 Event::CamFault;
+	Event *event = new Event(Hardware, Event::Error, Event::Camera, 
+				 err_code, err_msg);
+	DEB_EVENT(*event) << DEB_VAR1(*event);
+
+	espia->reportEvent(event);
+
+	DEB_ERROR() << "Aborting acquisition!";
+	int ret = ESPIA_ERR_ABORT;
+	DEB_RETURN() << DEB_VAR1(ret);
+	return ret;
 }
 
 void Acq::enableFrameCallback()
@@ -188,7 +218,7 @@ void Acq::setFrameCallbackActive(bool cb_active)
 	m_user_frame_cb_act = cb_active;
 }
 
-void Acq::processFrameCallback(struct espia_cb_data *cb_data)
+bool Acq::processFrameCallback(struct espia_cb_data *cb_data)
 {
 	DEB_MEMBER_FUNCT();
 
@@ -211,8 +241,9 @@ void Acq::processFrameCallback(struct espia_cb_data *cb_data)
 
 	l.unlock();
 
+	bool cont_cb = true;
 	if (aborted)
-		return;
+		return cont_cb;
 
 	HwFrameInfo hw_finfo;
 	real2virtFrameInfo(cb_finfo, hw_finfo);
@@ -220,13 +251,16 @@ void Acq::processFrameCallback(struct espia_cb_data *cb_data)
 
 	if (m_user_frame_cb_act) {
 		DEB_TRACE() << "Calling user FrameCallback";
-		newFrameReady(hw_finfo);
+		cont_cb = newFrameReady(hw_finfo);
 	}
 
 	if ((m_acq_end_cb != NULL) && finished) {
 		DEB_TRACE() << "Calling AcqEndCallback";
 		m_acq_end_cb->acqFinished(hw_finfo);
 	}
+
+	DEB_RETURN() << DEB_VAR1(cont_cb);
+	return cont_cb;
 }
 
 void Acq::bufferAlloc(int& nb_buffers, int nb_buffer_frames,
