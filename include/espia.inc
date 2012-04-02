@@ -29,6 +29,9 @@ ifeq ($(OS), suse82)
 ARCH = x86
 ESPIA_DRV_BASE = $(BLISS_DRV_BASE)/linux/espia/rel
 else # OS != suse82
+ESRF_TEST_CMD  = $(CS_SCRIPTS)/get_esrflinux > /dev/null 2>&1
+ESRF_OK        = $(shell $(ESRF_TEST_CMD) && echo "OK")
+ifeq ($(ESRF_OK),OK)
 ESRF_VER       = $(shell $(CS_SCRIPTS)/get_esrflinux)
 ESRF_MAJ_VER   = $(shell echo $(ESRF_VER) | cut -c1-4)
 ESRF_COMP_BASE = $(BLISS_DRV_BASE)/linux-2.6/compile/$(ESRF_MAJ_VER)
@@ -50,6 +53,14 @@ ESPIA_DRV_BASE = $(ESRF_COMP_BASE)/espia/release
 endif # ARCH != x86_64
 endif # OS == redhate5
 endif # OS == redhate4
+else  # ESRF_OK != OK
+ARCH           = $(shell uname -m)
+ifeq ($(ARCH), x86_64)
+ESPIA_DRV_BASE = $(BLISS_DRV_BASE)/linux-2.6/compile/r2v1/espia/release
+else  # ARCH != x86_64
+ESPIA_DRV_BASE = $(error Invalid Linux architecture: $(ARCH))
+endif # ARCH == X86_64
+endif # ESRF_OK == OK
 endif # OS == suse82
 endif # ESPIA_DRV_BASE
 
