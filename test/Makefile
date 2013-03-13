@@ -21,19 +21,17 @@
 ############################################################################
 include ../../../../config.inc
 
-focla-objs = ../src/Espia.o \
-	     ../../../../hardware/src/Hw.o ../../../../common/src/Common.o
-ct-objs = ../../../../control/src/Ct.o 
+focla-objs = ../src/Espia.o
 
 SRCS = testfocla.cpp testfoclahwinterface.cpp
 
 include ../../../common/espia/include/espia.inc
 
 LDFLAGS = -pthread -L$(ESPIA_DRV_LIB)
-LDLIBS = -lespia -lrt
+LDLIBS = -lespia -L../../../../../third-party/Processlib/build -L../../../../build -llimacore
 
-HWINTER_LDFLAGS = $(LDFLAGS) -L../../../../third-party/Processlib/build
-HWINTER_LDLIBS = $(LDLIBS) -lprocesslib
+HWINTER_LDFLAGS = $(LDFLAGS) 
+HWINTER_LDLIBS = $(LDLIBS)
 
 ifneq ($(COMPILE_CBF_SAVING), 0)
 HWINTER_LDFLAGS += -L../../../../third-party/CBFLib/lib
@@ -52,7 +50,7 @@ all: testfocla testfoclahwinterface
 testfocla:	testfocla.o $(focla-objs)
 	$(CXX) $(LDFLAGS) -o $@ $+ $(LDLIBS)
 
-testfoclahwinterface:	testfoclahwinterface.o $(focla-objs) $(ct-objs)
+testfoclahwinterface:	testfoclahwinterface.o $(focla-objs)
 	$(CXX) $(HWINTER_LDFLAGS) -o $@ $+ $(HWINTER_LDLIBS)
 
 clean:
