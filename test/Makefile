@@ -27,8 +27,10 @@ SRCS = testfocla.cpp testfoclahwinterface.cpp
 
 include ../../../common/espia/include/espia.inc
 
-LDFLAGS = -pthread -L$(ESPIA_DRV_LIB)
-LDLIBS = -lespia -L../../../../../third-party/Processlib/build -L../../../../build -llimacore
+LDFLAGS = -pthread -L$(ESPIA_DRV_LIB) \
+	  -L../../../../third-party/Processlib/build \
+	  -L../../../../build
+LDLIBS = -lespia -llimacore -lprocesslib
 
 HWINTER_LDFLAGS = $(LDFLAGS) 
 HWINTER_LDLIBS = $(LDLIBS)
