@@ -42,6 +42,8 @@ BufferMgr::BufferMgr(Acq& acq)
 	else
 		os << "BufferMgr#" << dev.getDevNb();
 	DEB_SET_OBJ_NAME(os.str());
+
+	m_nb_subframes = 1;
 }
 
 BufferMgr::~BufferMgr() 
@@ -60,8 +62,14 @@ int BufferMgr::getMaxNbBuffers(const FrameDim& frame_dim,
 	DEB_MEMBER_FUNCT();
 	DEB_PARAM() << DEB_VAR2(frame_dim, nb_concat_frames);
 
+	FrameDim xfer_frame_dim;
+	int xfer_concat_frames;
+	getXferParams(frame_dim, nb_concat_frames, 
+		      xfer_frame_dim, xfer_concat_frames);
+
 	FrameDim buffer_frame_dim;
-	getBufferFrameDim(frame_dim, nb_concat_frames, buffer_frame_dim);
+	getBufferFrameDim(xfer_frame_dim, xfer_concat_frames, 
+			  buffer_frame_dim);
 	DEB_TRACE() << DEB_VAR1(buffer_frame_dim);
 
 	int max_nb_buffers = GetDefMaxNbBuffers(buffer_frame_dim);
@@ -73,13 +81,22 @@ void BufferMgr::allocBuffers(int nb_buffers, int nb_concat_frames,
 			     const FrameDim& frame_dim)
 {
 	DEB_MEMBER_FUNCT();
-	m_acq.bufferAlloc(nb_buffers, nb_concat_frames, frame_dim);
+
+	FrameDim xfer_frame_dim;
+	int xfer_concat_frames;
+	getXferParams(frame_dim, nb_concat_frames, 
+		      xfer_frame_dim, xfer_concat_frames);
+
+	m_acq.bufferAlloc(nb_buffers, xfer_concat_frames, xfer_frame_dim);
+
+	m_frame_dim = frame_dim;
 }
 
 const FrameDim& BufferMgr::getFrameDim()
 {
 	DEB_MEMBER_FUNCT();
-	return m_acq.getFrameDim();
+	DEB_RETURN() << DEB_VAR1(m_frame_dim);
+	return m_frame_dim;
 }
 
 void BufferMgr::getNbBuffers(int& nb_buffers)
@@ -92,6 +109,8 @@ void BufferMgr::getNbConcatFrames(int& nb_concat_frames)
 {
 	DEB_MEMBER_FUNCT();
 	m_acq.getNbBufferFrames(nb_concat_frames);
+	nb_concat_frames *= m_frames_per_xfer;
+	DEB_RETURN() << DEB_VAR1(nb_concat_frames);
 }
 
 void BufferMgr::releaseBuffers()
@@ -103,13 +122,26 @@ void BufferMgr::releaseBuffers()
 void *BufferMgr::getBufferPtr(int buffer_nb, int concat_frame_nb)
 {
 	DEB_MEMBER_FUNCT();
-	return m_acq.getBufferFramePtr(buffer_nb, concat_frame_nb);
+	DEB_PARAMS() << DEB_VAR2(buffer_nb, concat_frame_nb);
+
+	int xfer_frame_nb = concat_frame_nb / m_frames_per_xfer;
+	int frame_offset = concat_frame_nb % m_frames_per_xfer;
+	DEB_TRACE() << DEB_VAR2(xfer_frame_nb, frame_offset);
+
+	void *ptr = m_acq.getBufferFramePtr(buffer_nb, xfer_frame_nb);
+	ptr = (char *) ptr + frame_offset * m_frame_dim.getMemSize();
+
+	DEB_RETURN() << DEB_VAR1(ptr);
+	return ptr;
 }
 
 void BufferMgr::getFrameInfo(int acq_frame_nb, HwFrameInfoType& info)
 {
 	DEB_MEMBER_FUNCT();
-	m_acq.getFrameInfo(acq_frame_nb, info);
+	DEB_PARAMS() << DEB_VAR1(acq_frame_nb);
+
+	int xfer_frame_nb = acq_frame_nb / m_frames_per_xfer;
+	m_acq.getFrameInfo(xfer_frame_nb, info);
 }
 
 void BufferMgr::setStartTimestamp(Timestamp  start_ts)
@@ -121,6 +153,40 @@ void BufferMgr::getStartTimestamp(Timestamp& start_ts)
 {
 	DEB_MEMBER_FUNCT();
 	m_acq.getStartTimestamp(start_ts);
+}
+
+void BufferMgr::setNbFramesPerXfer(int frames_per_xfer)
+{
+	DEB_MEMBER_FUNCT();
+	DEB_PARAM() << DEB_VAR1(frames_per_xfer);
+	frames_per_xfer = m_frames_per_xfer;
+}
+
+void BufferMgr::getNbFramesPerXfer(int& frames_per_xfer)
+{
+	DEB_MEMBER_FUNCT();
+	frames_per_xfer = m_frames_per_xfer;
+	DEB_RETURN() << DEB_VAR1(frames_per_xfer);
+}
+
+void BufferMgr::getXferParams(const FrameDim& frame_dim, int nb_concat_frames,
+			      FrameDim& xfer_frame_dim, int xfer_concat_frames)
+{
+	DEB_MEMBER_FUNCT();
+	DEB_PARAM() << DEB_VAR2(frame_dim, nb_concat_frames);
+
+	if (nb_concat_frames % m_frames_per_xfer != 0)
+		THROW_HW_ERROR(InvalidValue) 
+			<< "nb_concat_frames (" << nb_concat_frames << ") "
+			<< "is not a multiple of "
+			<< "frames_per_xfer (" << m_frames_per_xfer << ")";
+
+	int width = frame_dim.getSize().getWidth();
+	int height = frame_dim.getSize().getHeight() * m_frames_per_xfer;
+	xfer_frame_dim = FrameDim(width, height, frame_dim.getImageType());
+	xfer_concat_frames = nb_concat_frames / m_frames_per_xfer;
+
+	DEB_RETURN() << DEB_VAR2(xfer_frame_dim, xfer_concat_frames);
 }
 
 void BufferMgr::setFrameCallbackActive(bool cb_active)

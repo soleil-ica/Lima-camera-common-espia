@@ -57,6 +57,9 @@ class BufferMgr : public BufferCbMgr
 	virtual void setStartTimestamp(Timestamp  start_ts);
 	virtual void getStartTimestamp(Timestamp& start_ts);
 
+	void setNbFramesPerXfer(int  frames_per_xfer);
+	void getNbFramesPerXfer(int& frames_per_xfer);
+
  protected:
 	class FrameCallback : public HwFrameCallback
 	{
@@ -76,8 +79,13 @@ class BufferMgr : public BufferCbMgr
 	virtual void setFrameCallbackActive(bool cb_active);
 	
  private:
+	void getXferParams(const FrameDim& frame_dim, int nb_concat_frames,
+			   FrameDim& xfer_frame_dim, int xfer_concat_frames);
+	
 	Acq& m_acq;
 	FrameCallback m_frame_cb;
+	int m_frames_per_xfer;
+	FrameDim m_frame_dim;
 };
 
 } // namespace Espia
