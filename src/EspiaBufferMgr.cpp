@@ -43,7 +43,7 @@ BufferMgr::BufferMgr(Acq& acq)
 		os << "BufferMgr#" << dev.getDevNb();
 	DEB_SET_OBJ_NAME(os.str());
 
-	m_nb_subframes = 1;
+	m_frames_per_xfer = 1;
 }
 
 BufferMgr::~BufferMgr() 
@@ -122,7 +122,7 @@ void BufferMgr::releaseBuffers()
 void *BufferMgr::getBufferPtr(int buffer_nb, int concat_frame_nb)
 {
 	DEB_MEMBER_FUNCT();
-	DEB_PARAMS() << DEB_VAR2(buffer_nb, concat_frame_nb);
+	DEB_PARAM() << DEB_VAR2(buffer_nb, concat_frame_nb);
 
 	int xfer_frame_nb = concat_frame_nb / m_frames_per_xfer;
 	int frame_offset = concat_frame_nb % m_frames_per_xfer;
@@ -138,7 +138,7 @@ void *BufferMgr::getBufferPtr(int buffer_nb, int concat_frame_nb)
 void BufferMgr::getFrameInfo(int acq_frame_nb, HwFrameInfoType& info)
 {
 	DEB_MEMBER_FUNCT();
-	DEB_PARAMS() << DEB_VAR1(acq_frame_nb);
+	DEB_PARAM() << DEB_VAR1(acq_frame_nb);
 
 	int xfer_frame_nb = acq_frame_nb / m_frames_per_xfer;
 	m_acq.getFrameInfo(xfer_frame_nb, info);
@@ -170,7 +170,7 @@ void BufferMgr::getNbFramesPerXfer(int& frames_per_xfer)
 }
 
 void BufferMgr::getXferParams(const FrameDim& frame_dim, int nb_concat_frames,
-			      FrameDim& xfer_frame_dim, int xfer_concat_frames)
+			      FrameDim& xfer_frame_dim, int& xfer_concat_frames)
 {
 	DEB_MEMBER_FUNCT();
 	DEB_PARAM() << DEB_VAR2(frame_dim, nb_concat_frames);

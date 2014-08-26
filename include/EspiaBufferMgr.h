@@ -80,7 +80,7 @@ class BufferMgr : public BufferCbMgr
 	
  private:
 	void getXferParams(const FrameDim& frame_dim, int nb_concat_frames,
-			   FrameDim& xfer_frame_dim, int xfer_concat_frames);
+			   FrameDim& xfer_frame_dim, int& xfer_concat_frames);
 	
 	Acq& m_acq;
 	FrameCallback m_frame_cb;
