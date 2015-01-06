@@ -20,7 +20,7 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 //###########################################################################
 #include "EspiaBufferMgr.h"
-#include "MemUtils.h"
+#include "lima/MemUtils.h"
 #include <sstream>
 
 using namespace lima;

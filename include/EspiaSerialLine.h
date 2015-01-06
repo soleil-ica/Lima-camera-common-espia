@@ -31,8 +31,8 @@
 #define ESPIASERIALLINE_H
 
 #include <string>
-#include "Exceptions.h"
-#include "HwSerialLine.h"
+#include "lima/Exceptions.h"
+#include "lima/HwSerialLine.h"
 #include "EspiaDev.h"
 
 

@@ -36,7 +36,7 @@
 #include <vector>
 #include "EspiaDev.h"
 #include "focla_lib.h"
-#include "HwSerialLine.h"
+#include "lima/HwSerialLine.h"
 
 
 namespace lima

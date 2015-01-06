@@ -22,7 +22,7 @@
 #ifndef ESPIABUFFERMGR_H
 #define ESPIABUFFERMGR_H
 
-#include "HwBufferMgr.h"
+#include "lima/HwBufferMgr.h"
 #include "EspiaAcq.h"
 
 namespace lima

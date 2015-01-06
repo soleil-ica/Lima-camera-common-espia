@@ -25,8 +25,8 @@
 #include <map>
 #include "Espia.h"
 
-#include "ThreadUtils.h"
-#include "HwFrameCallback.h"
+#include "lima/ThreadUtils.h"
+#include "lima/HwFrameCallback.h"
 
 namespace lima
 {

@@ -31,7 +31,7 @@
 #include <sstream>
 #include "EspiaFocla.h"
 #include "EspiaSerialLine.h"
-#include "MiscUtils.h"
+#include "lima/MiscUtils.h"
 
 using namespace std;
 using namespace lima;

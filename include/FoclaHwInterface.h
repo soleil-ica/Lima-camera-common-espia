@@ -30,7 +30,7 @@
 #ifndef FOCLAHWINTERFACE_H
 #define FOCLAHWINTERFACE_H
 
-#include "HwInterface.h"
+#include "lima/HwInterface.h"
 #include "EspiaBufferMgr.h"
 #include "EspiaFocla.h"
 

@@ -31,8 +31,8 @@
 
 #include "EspiaFocla.h"
 #include "EspiaBufferMgr.h"
-#include "HwBufferSave.h"
-#include "Timestamp.h"
+#include "lima/HwBufferSave.h"
+#include "lima/Timestamp.h"
 
 using namespace lima;
 using namespace std;

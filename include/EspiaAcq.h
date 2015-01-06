@@ -23,9 +23,9 @@
 #define ESPIAACQ_H
 
 #include "EspiaDev.h"
-#include "SizeUtils.h"
-#include "HwFrameCallback.h"
-#include "Event.h"
+#include "lima/SizeUtils.h"
+#include "lima/HwFrameCallback.h"
+#include "lima/Event.h"
 
 namespace lima
 {

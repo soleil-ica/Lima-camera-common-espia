@@ -28,7 +28,7 @@ class BufferMgr : BufferCbMgr
 
 %TypeHeaderCode
 #include "EspiaBufferMgr.h"
-#include "MemUtils.h"
+#include "lima/MemUtils.h"
 %End
 
  public:

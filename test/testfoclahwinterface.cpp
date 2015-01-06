@@ -33,9 +33,9 @@
 
 #include "FoclaHwInterface.h"
 #include "EspiaBufferMgr.h"
-#include "PoolThreadMgr.h"
-#include "CtSaving.h"
-#include "Data.h"
+#include "processlib/PoolThreadMgr.h"
+#include "lima/CtSaving.h"
+#include "processlib/Data.h"
 
 using namespace lima;
 using namespace std;
