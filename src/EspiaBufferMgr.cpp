@@ -44,6 +44,7 @@ BufferMgr::BufferMgr(Acq& acq)
 	DEB_SET_OBJ_NAME(os.str());
 
 	m_frames_per_xfer = 1;
+	m_cam_xfer_mode = NoCamMultiFrameXfer;
 }
 
 BufferMgr::~BufferMgr() 
@@ -153,6 +154,20 @@ void BufferMgr::getStartTimestamp(Timestamp& start_ts)
 {
 	DEB_MEMBER_FUNCT();
 	m_acq.getStartTimestamp(start_ts);
+}
+
+void BufferMgr::setCamMultiFrameXferMode(int cam_xfer_mode)
+{
+	DEB_MEMBER_FUNCT();
+	DEB_PARAM() << DEB_VAR1(cam_xfer_mode);
+	cam_xfer_mode = m_cam_xfer_mode;
+}
+
+void BufferMgr::getCamMultiFrameXferMode(int& cam_xfer_mode)
+{
+	DEB_MEMBER_FUNCT();
+	cam_xfer_mode = m_cam_xfer_mode;
+	DEB_RETURN() << DEB_VAR1(cam_xfer_mode);
 }
 
 void BufferMgr::setNbFramesPerXfer(int frames_per_xfer)

@@ -32,6 +32,11 @@ class BufferMgr : BufferCbMgr
 %End
 
  public:
+	enum {
+		NoCamMultiFrameXfer,
+		CamMultiFrameXfer,
+	};
+
 	BufferMgr(Espia::Acq& acq);
 	virtual ~BufferMgr();
 
@@ -52,6 +57,11 @@ class BufferMgr : BufferCbMgr
 
 	virtual void setStartTimestamp(Timestamp  start_ts);
 	virtual void getStartTimestamp(Timestamp& start_ts /Out/);
+
+	void setCamMultiFrameXferMode(int cam_xfer_mode);
+	void getCamMultiFrameXferMode(int& cam_xfer_mode /Out/);
+	void setNbFramesPerXfer(int  frames_per_xfer);
+	void getNbFramesPerXfer(int& frames_per_xfer /Out/);
 
  protected:
 /* XXX This gives errors in SIP
