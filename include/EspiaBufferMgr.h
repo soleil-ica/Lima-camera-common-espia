@@ -36,7 +36,7 @@ class BufferMgr : public BufferCbMgr
 	DEB_CLASS_NAMESPC(DebModEspia, "BufferMgr", "Espia");
 
  public:
-	enum {
+	enum CamMultiFrameXferMode {
 		NoCamMultiFrameXfer,
 		CamMultiFrameXfer,
 	};
@@ -62,8 +62,8 @@ class BufferMgr : public BufferCbMgr
 	virtual void setStartTimestamp(Timestamp  start_ts);
 	virtual void getStartTimestamp(Timestamp& start_ts);
 
-	void setCamMultiFrameXferMode(int cam_xfer_mode);
-	void getCamMultiFrameXferMode(int& cam_xfer_mode);
+	void setCamMultiFrameXferMode(CamMultiFrameXferMode cam_xfer_mode);
+	void getCamMultiFrameXferMode(CamMultiFrameXferMode& cam_xfer_mode);
 	void setNbFramesPerXfer(int  frames_per_xfer);
 	void getNbFramesPerXfer(int& frames_per_xfer);
 
@@ -92,7 +92,7 @@ class BufferMgr : public BufferCbMgr
 	Acq& m_acq;
 	FrameCallback m_frame_cb;
 	int m_frames_per_xfer;
-	int m_cam_xfer_mode;
+	CamMultiFrameXferMode m_cam_xfer_mode;
 	FrameDim m_frame_dim;
 };
 

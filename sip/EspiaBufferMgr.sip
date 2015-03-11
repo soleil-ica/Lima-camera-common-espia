@@ -32,7 +32,7 @@ class BufferMgr : BufferCbMgr
 %End
 
  public:
-	enum {
+	enum CamMultiFrameXferMode {
 		NoCamMultiFrameXfer,
 		CamMultiFrameXfer,
 	};
@@ -58,8 +58,8 @@ class BufferMgr : BufferCbMgr
 	virtual void setStartTimestamp(Timestamp  start_ts);
 	virtual void getStartTimestamp(Timestamp& start_ts /Out/);
 
-	void setCamMultiFrameXferMode(int cam_xfer_mode);
-	void getCamMultiFrameXferMode(int& cam_xfer_mode /Out/);
+	void setCamMultiFrameXferMode(CamMultiFrameXferMode  cam_xfer_mode);
+	void getCamMultiFrameXferMode(CamMultiFrameXferMode& cam_xfer_mode /Out/);
 	void setNbFramesPerXfer(int  frames_per_xfer);
 	void getNbFramesPerXfer(int& frames_per_xfer /Out/);
 

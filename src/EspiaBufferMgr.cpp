@@ -156,14 +156,14 @@ void BufferMgr::getStartTimestamp(Timestamp& start_ts)
 	m_acq.getStartTimestamp(start_ts);
 }
 
-void BufferMgr::setCamMultiFrameXferMode(int cam_xfer_mode)
+void BufferMgr::setCamMultiFrameXferMode(CamMultiFrameXferMode cam_xfer_mode)
 {
 	DEB_MEMBER_FUNCT();
 	DEB_PARAM() << DEB_VAR1(cam_xfer_mode);
 	cam_xfer_mode = m_cam_xfer_mode;
 }
 
-void BufferMgr::getCamMultiFrameXferMode(int& cam_xfer_mode)
+void BufferMgr::getCamMultiFrameXferMode(CamMultiFrameXferMode& cam_xfer_mode)
 {
 	DEB_MEMBER_FUNCT();
 	cam_xfer_mode = m_cam_xfer_mode;
