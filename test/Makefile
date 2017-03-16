@@ -19,33 +19,36 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 ############################################################################
-include ../../../../config.inc
+LIMA_DIR := $(shell pwd)/../../../..
+
+include $(LIMA_DIR)/config.inc
+include $(LIMA_DIR)/control/control.inc
+
+include ../include/espia.inc
 
 focla-objs = ../src/Espia.o
 
 SRCS = testfocla.cpp testfoclahwinterface.cpp
 
-include ../../../common/espia/include/espia.inc
-
 LDFLAGS = -pthread -L$(ESPIA_DRV_LIB) \
-	  -L../../../../third-party/Processlib/build \
-	  -L../../../../build
+	  -L$(LIMA_DIR)/third-party/Processlib/build \
+	  -L$(LIMA_DIR)/build
 LDLIBS = -lespia -llimacore -lprocesslib
 
 HWINTER_LDFLAGS = $(LDFLAGS) 
 HWINTER_LDLIBS = $(LDLIBS)
 
 ifneq ($(COMPILE_CBF_SAVING), 0)
-HWINTER_LDFLAGS += -L../../../../third-party/CBFLib/lib
+HWINTER_LDFLAGS += -L$(LIMA_DIR)/third-party/CBFLib/lib
 HWINTER_LDLIBS += -lcbf
 endif
 
-CXXFLAGS = -I../include \
-	   -I../../../../hardware/include -I../../../../common/include \
-           -I../../../../control/include/ \
-           -I../../../../control/software_operation/include/ \
-	   -I../../../../third-party/Processlib/core/include \
-	   -I$(ESPIA_DRV_INCL) -Wall -pthread -g
+ifneq ($(COMPILE_CONFIG), 0)
+LDFLAGS += -L$(LIMA_DIR)/third-party/libconfig/lib/.libs
+LDLIBS += -lconfig++
+endif
+
+CXXFLAGS = -I../include $(CT_CXXFLAGS) -I$(ESPIA_DRV_INCL)
 
 all: testfocla testfoclahwinterface
 

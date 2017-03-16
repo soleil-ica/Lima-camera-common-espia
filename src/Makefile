@@ -19,17 +19,19 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 ############################################################################
+LIMA_DIR := $(shell pwd)/../../../..
+
+include $(LIMA_DIR)/config.inc
+include $(LIMA_DIR)/control/control.inc
+include ../include/espia.inc
+
 
 espia-objs = EspiaBase.o EspiaDev.o EspiaAcq.o EspiaSerialLine.o \
 	     EspiaBufferMgr.o EspiaFocla.o FoclaHwInterface.o
 
 SRCS = $(espia-objs:.o=.cpp)
 
-include ../include/espia.inc
-
-CXXFLAGS = -I../include \
-	   -I../../../../hardware/include -I../../../../common/include \
-	   -I$(ESPIA_DRV_INCL) -Wall -pthread -fPIC -g
+CXXFLAGS = -I../include $(CT_CXXFLAGS) -I$(ESPIA_DRV_INCL)
 
 all: Espia.o
 
