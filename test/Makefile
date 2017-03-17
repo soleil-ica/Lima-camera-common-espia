@@ -30,25 +30,14 @@ focla-objs = ../src/Espia.o
 
 SRCS = testfocla.cpp testfoclahwinterface.cpp
 
-LDFLAGS = -pthread -L$(ESPIA_DRV_LIB) \
-	  -L$(LIMA_DIR)/third-party/Processlib/build \
-	  -L$(LIMA_DIR)/build
-LDLIBS = -lespia -llimacore -lprocesslib
+CPPFLAGS = -I../include $(CT_CPPFLAGS) -I$(ESPIA_DRV_INCL)
+CXXFLAGS = $(CT_CXXFLAGS)
+DEPLIBS = $(CT_DEPLIBS) \
+	  $(LIMA_DIR)/build,limacore \
+#	  $(LIMA_DIR)/build,limaespia
+LDFLAGS = $(CT_LDFLAGS) $(call lib-depflags,$(DEPLIBS)) -L$(ESPIA_DRV_LIB)
+LDLIBS = $(CT_LDLIBS) $(call lib-deplibs,$(DEPLIBS)) -lespia
 
-HWINTER_LDFLAGS = $(LDFLAGS) 
-HWINTER_LDLIBS = $(LDLIBS)
-
-ifneq ($(COMPILE_CBF_SAVING), 0)
-HWINTER_LDFLAGS += -L$(LIMA_DIR)/third-party/CBFLib/lib
-HWINTER_LDLIBS += -lcbf
-endif
-
-ifneq ($(COMPILE_CONFIG), 0)
-LDFLAGS += -L$(LIMA_DIR)/third-party/libconfig/lib/.libs
-LDLIBS += -lconfig++
-endif
-
-CXXFLAGS = -I../include $(CT_CXXFLAGS) -I$(ESPIA_DRV_INCL)
 
 all: testfocla testfoclahwinterface
 
@@ -56,12 +45,12 @@ testfocla:	testfocla.o $(focla-objs)
 	$(CXX) $(LDFLAGS) -o $@ $+ $(LDLIBS)
 
 testfoclahwinterface:	testfoclahwinterface.o $(focla-objs)
-	$(CXX) $(HWINTER_LDFLAGS) -o $@ $+ $(HWINTER_LDLIBS)
+	$(CXX) $(LDFLAGS) -o $@ $+ $(LDLIBS)
 
 clean:
 	rm -f *.o testfocla testfoclahwinterface
 %.o : %.cpp
-	$(COMPILE.cpp) -MD $(CXXFLAGS) -o $@ $<
+	$(COMPILE.cpp) $(CPPFLAGS) -MD $(CXXFLAGS) -o $@ $<
 	@cp $*.d $*.P; \
 	sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
 	-e '/^$$/ d' -e 's/$$/ :/' < $*.d >> $*.P; \
