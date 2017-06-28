@@ -21,33 +21,31 @@
 #  You should have received a copy of the GNU General Public License
 #  along with this program; if not, see <http://www.gnu.org/licenses/>.
 ############################################################################
+set(NAME "espia")
 
-set(espia_srcs src/Espia.cpp  src/FoclaHwInterface.cpp
+set(${NAME}_srcs src/Espia.cpp  src/FoclaHwInterface.cpp
 	 src/EspiaAcq.cpp src/EspiaBufferMgr.cpp
 	 src/EspiaDev.cpp src/EspiaFocla.cpp
 	 src/EspiaSerialLine.cpp)
 
-file(STRINGS "VERSION" espia_vers)
-add_library(limaespia SHARED ${espia_srcs})
+add_library(lima${NAME} SHARED ${${NAME}_srcs})
 
-target_include_directories(limaespia PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
+target_include_directories(lima${NAME} PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/include")
 
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${CMAKE_MODULE_PATH})
 include(FindEspiaDrv)
 
 #set paths for espia driver lib and include files
-target_include_directories(limaespia PUBLIC "${ESPIA_DRV_INCLUDE_DIR}")
+target_include_directories(lima${NAME} PUBLIC "${ESPIA_DRV_INCLUDE_DIR}")
 
-target_link_libraries(limaespia limacore)
-target_link_libraries(limaespia ${ESPIA_DRV_LIB})
+target_link_libraries(lima${NAME} limacore)
+target_link_libraries(lima${NAME} ${ESPIA_DRV_LIB})
 
 
-set_target_properties(limaespia PROPERTIES VERSION ${espia_vers} SOVERSION "1")
+include(CameraVERSION)
+install(TARGETS lima${NAME} LIBRARY DESTINATION lib)
 
-install(TARGETS limaespia LIBRARY DESTINATION lib)
-
-if(COMPILE_SIP)
-    set(NAME "espia")
+if(LIMA_ENABLE_PYTHON)
     set(INCLUDES)
     file(GLOB sipfiles 
 	      RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}/sip"
