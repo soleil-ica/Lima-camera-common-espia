@@ -19,49 +19,24 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 ############################################################################
+
+ifndef OS
 CS_SCRIPTS   = /csadmin/common/scripts
 OS           = $(shell $(CS_SCRIPTS)/get_os.share)
+endif
 
-BLISS_DRV_BASE = /segfs/bliss/source/driver
+ifndef KERN_MAJ
+KERN_MAJ       = $(shell uname -r | cut -d. -f1-2)
+endif
+
+ifndef ARCH
+ARCH           = $(shell uname -m)
+endif
 
 ifndef ESPIA_DRV_BASE
-ifeq ($(OS), suse82)
-ARCH = x86
-ESPIA_DRV_BASE = $(BLISS_DRV_BASE)/linux/espia/rel
-else # OS != suse82
-ESRF_TEST_CMD  = $(CS_SCRIPTS)/get_esrflinux > /dev/null 2>&1
-ESRF_OK        = $(shell $(ESRF_TEST_CMD) && echo "OK")
-ifeq ($(ESRF_OK),OK)
-ESRF_VER       = $(shell $(CS_SCRIPTS)/get_esrflinux)
-ESRF_MAJ_VER   = $(shell echo $(ESRF_VER) | cut -c1-4)
-ESRF_COMP_BASE = $(BLISS_DRV_BASE)/linux-2.6/compile/esrflinux/$(ESRF_MAJ_VER)
-ARCH           = $(shell $(CS_SCRIPTS)/get_esrflinux --architecture)
-ifeq ($(OS), redhate4)
-ifneq ($(ARCH), x86)
-ESPIA_DRV_BASE = $(error Invalid ESRF/Linux 1.x architecture: $(ARCH))
-else
+BLISS_DRV_BASE = /segfs/bliss/source/driver/linux-$(KERN_MAJ)
+ESRF_COMP_BASE = $(BLISS_DRV_BASE)/compile/$(OS)
 ESPIA_DRV_BASE = $(ESRF_COMP_BASE)/espia/release
-endif
-else # OS != redhate4
-ifneq ($(OS), redhate5)
-ESPIA_DRV_BASE = $(error Invalid ESRF/Linux version: $(ESRF_VER))
-else # OS == redhate5
-ifneq ($(ARCH), x86_64)
-ESPIA_DRV_BASE = $(error Invalid ESRF/Linux architecture: $(ARCH))
-else # ARCH == x86_64
-ESPIA_DRV_BASE = $(ESRF_COMP_BASE)/espia/release
-endif # ARCH != x86_64
-endif # OS == redhate5
-endif # OS == redhate4
-else  # ESRF_OK != OK
-ARCH           = $(shell uname -m)
-ifeq ($(ARCH), x86_64)
-ESPIA_DRV_BASE = $(BLISS_DRV_BASE)/linux-2.6/compile/esrflinux/espia/release
-else  # ARCH != x86_64
-ESPIA_DRV_BASE = $(error Invalid Linux architecture: $(ARCH))
-endif # ARCH == X86_64
-endif # ESRF_OK == OK
-endif # OS == suse82
 endif # ESPIA_DRV_BASE
 
 ifndef ESPIA_DRV_INCL
