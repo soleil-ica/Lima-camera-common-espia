@@ -19,33 +19,25 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 ############################################################################
-include ../../../../config.inc
+LIMA_DIR := $(shell pwd)/../../../..
+
+include $(LIMA_DIR)/config.inc
+include $(LIMA_DIR)/control/control.inc
+
+include ../include/espia.inc
 
 focla-objs = ../src/Espia.o
 
 SRCS = testfocla.cpp testfoclahwinterface.cpp
 
-include ../../../common/espia/include/espia.inc
+CPPFLAGS = -I../include $(CT_CPPFLAGS) -I$(ESPIA_DRV_INCL)
+CXXFLAGS = $(CT_CXXFLAGS)
+DEPLIBS = $(CT_DEPLIBS) \
+	  $(LIMA_DIR)/build,limacore \
+#	  $(LIMA_DIR)/build,limaespia
+LDFLAGS = $(CT_LDFLAGS) $(call lib-depflags,$(DEPLIBS)) -L$(ESPIA_DRV_LIB)
+LDLIBS = $(CT_LDLIBS) $(call lib-deplibs,$(DEPLIBS)) -lespia
 
-LDFLAGS = -pthread -L$(ESPIA_DRV_LIB) \
-	  -L../../../../third-party/Processlib/build \
-	  -L../../../../build
-LDLIBS = -lespia -llimacore -lprocesslib
-
-HWINTER_LDFLAGS = $(LDFLAGS) 
-HWINTER_LDLIBS = $(LDLIBS)
-
-ifneq ($(COMPILE_CBF_SAVING), 0)
-HWINTER_LDFLAGS += -L../../../../third-party/CBFLib/lib
-HWINTER_LDLIBS += -lcbf
-endif
-
-CXXFLAGS = -I../include \
-	   -I../../../../hardware/include -I../../../../common/include \
-           -I../../../../control/include/ \
-           -I../../../../control/software_operation/include/ \
-	   -I../../../../third-party/Processlib/core/include \
-	   -I$(ESPIA_DRV_INCL) -Wall -pthread -g
 
 all: testfocla testfoclahwinterface
 
@@ -53,12 +45,12 @@ testfocla:	testfocla.o $(focla-objs)
 	$(CXX) $(LDFLAGS) -o $@ $+ $(LDLIBS)
 
 testfoclahwinterface:	testfoclahwinterface.o $(focla-objs)
-	$(CXX) $(HWINTER_LDFLAGS) -o $@ $+ $(HWINTER_LDLIBS)
+	$(CXX) $(LDFLAGS) -o $@ $+ $(LDLIBS)
 
 clean:
 	rm -f *.o testfocla testfoclahwinterface
 %.o : %.cpp
-	$(COMPILE.cpp) -MD $(CXXFLAGS) -o $@ $<
+	$(COMPILE.cpp) $(CPPFLAGS) -MD $(CXXFLAGS) -o $@ $<
 	@cp $*.d $*.P; \
 	sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
 	-e '/^$$/ d' -e 's/$$/ :/' < $*.d >> $*.P; \

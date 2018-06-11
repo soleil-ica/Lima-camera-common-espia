@@ -19,17 +19,20 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, see <http://www.gnu.org/licenses/>.
 ############################################################################
+LIMA_DIR := $(shell pwd)/../../../..
+
+include $(LIMA_DIR)/config.inc
+include $(LIMA_DIR)/control/control.inc
+include ../include/espia.inc
+
 
 espia-objs = EspiaBase.o EspiaDev.o EspiaAcq.o EspiaSerialLine.o \
 	     EspiaBufferMgr.o EspiaFocla.o FoclaHwInterface.o
 
 SRCS = $(espia-objs:.o=.cpp)
 
-include ../include/espia.inc
-
-CXXFLAGS = -I../include \
-	   -I../../../../hardware/include -I../../../../common/include \
-	   -I$(ESPIA_DRV_INCL) -Wall -pthread -fPIC -g
+CPPFLAGS = -I../include $(CT_CPPFLAGS) -I$(ESPIA_DRV_INCL)
+CXXFLAGS = $(CT_CXXFLAGS)
 
 all: Espia.o
 
@@ -37,16 +40,20 @@ Espia.o:	$(espia-objs)
 	$(LD) -o $@ -r $+
 
 EspiaBase.o:	Espia.cpp
-	$(CXX) $(CXXFLAGS) -c -o $@ $<
+	$(CXX) $(CPPFLAGS) -c $(CXXFLAGS) -o $@ $<
 
 clean:
 	rm -f *.o *.P
 
 %.o : %.cpp
-	$(COMPILE.cpp) -MD $(CXXFLAGS) -o $@ $<
+	$(COMPILE.cpp) $(CPPFLAGS) -MD $(CXXFLAGS) -o $@ $<
 	@cp $*.d $*.P; \
 	sed -e 's/#.*//' -e 's/^[^:]*: *//' -e 's/ *\\$$//' \
 	-e '/^$$/ d' -e 's/$$/ :/' < $*.d >> $*.P; \
 	rm -f $*.d
 
 -include $(SRCS:.cpp=.P)
+
+.PHONY: check-syntax
+check-syntax:
+	$(CXX) $(CPPFLAGS) -Wextra -fsyntax-only $(CXXFLAGS) $(CHK_SOURCES)
